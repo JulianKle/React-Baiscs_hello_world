@@ -7,6 +7,8 @@ import { SearchAssessment } from "./components/searchAssessment/SearchAssessment
 
 function App() {
   const [assessments, setAssessments] = useState([]);
+  const [filter, setFilter] = useState([]);
+  const [noFilter, setNoFilter] = useState(true);
 
   function handleNewAssessment(newAssessment) {
     const updatedAssessment = [{ id: uid(), ...newAssessment }, ...assessments];
@@ -23,23 +25,45 @@ function App() {
   }
 
   function filterAssessment(filterFor) {
-    setAssessments(
+    setFilter(
       assessments.filter((assessment) => {
         return assessment.title === filterFor;
       })
     );
   }
 
+  function noFilterFalse() {
+    setNoFilter(false);
+  }
+
+  function noFilterTrue() {
+    setNoFilter(true);
+  }
+
   console.log(assessments);
 
   return (
     <>
-      <SearchAssessment onFilter={filterAssessment} />
-      <Formular handleNewAssessment={handleNewAssessment} />
-      <Card
-        assessments={assessments}
-        onDeleteAssessment={handleDeleteAssessment}
+      <SearchAssessment
+        onFilter={filterAssessment}
+        onSearch={noFilterFalse}
+        onOverview={noFilterTrue}
       />
+      <Formular handleNewAssessment={handleNewAssessment} />
+      {noFilter ? (
+        <Card
+          assessments={assessments}
+          onDeleteAssessment={handleDeleteAssessment}
+        />
+      ) : (
+        filter.map((filteredAssessment) => (
+          <Card
+            key={filteredAssessment.id}
+            assessments={[filteredAssessment]}
+            onDeleteAssessment={handleDeleteAssessment}
+          />
+        ))
+      )}
     </>
   );
 }
